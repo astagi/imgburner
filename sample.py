@@ -22,4 +22,4 @@ for device in devices:
 img_path = "2013-09-25-wheezy-raspbian.img"
 selected_device = devices[1]
 
-#burner.burn(selected_device, img_path, progress_listener)
+burner.burn(selected_device, img_path, progress_listener)
