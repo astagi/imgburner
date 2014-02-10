@@ -6,7 +6,7 @@ Usage
 -----
 Create your Burner:
 
-    from imgburner import Burner, ProgressListener
+    from imgburner import Burner
     burner = Burner()
 
 Get a list of devices:
@@ -38,11 +38,10 @@ Burn an img file:
         def on_error(self, error):
             print "Error!"
 
-        def on_eject(self):
-            print "Ejecting..."
-
         def on_completed(self):
             print "Burning process completed!"
+
+    #Instance and use your burner object..
 
     burner.burn(selected_device, img_path, MyProgressListener())
 
