@@ -22,6 +22,25 @@ class ProgressListener():
     def on_completed(self):
         pass
 
+class Utilities():
+    @classmethod
+    def human_format_to_bytes(cls, human_format):
+        progressreg = re.compile('^(\d+)\s*(..)')
+        m = progressreg.match( human_format )
+        if m:
+            value = int( m.group(1) )
+            unit = m.group(2).lower()
+            mul = 1
+            if unit == 'kb':
+                mul = 1000
+            elif unit == 'mb':
+                mul = 1000 * 1000
+            elif unit == 'gb':
+                mul = 1000 * 1000 * 1000
+            elif unit == 'tb':
+                mul = 1000 * 1000 * 1000 * 1000
+        return value * mul
+
 current_os = platform.system()
 
 if current_os == 'Darwin':
@@ -197,7 +216,29 @@ elif current_os == 'Windows':
 
         #fires the burn command
         def burn(self, device, img_path, progress_listener=ProgressListener()):
-            raise NotImplementedError("Work in progress")
+            filepath = img_path
+            filesize = os.path.getsize( filepath )
+            progresssize = 0
+            device_identifier = device['DeviceIdentifier']
+            command = "bin/flashnul.exe " + device_identifier + " -L " + filepath + " -P -k"
+            p = subprocess.Popen(shlex.split(command),stderr=subprocess.PIPE,stdout=subprocess.PIPE, universal_newlines=True)
+
+            for line in iter(p.stderr.readline, ""):
+                progressreg = re.compile('^.* \((\d+ ..)\), .*')
+                m = progressreg.match( line )
+                if m:
+                    progresssize = m.group(1)
+                    progresssize = Utilities.human_format_to_bytes(progresssize)
+                    if ( filesize > 0 ):
+                        pct = float(progresssize) / float(filesize)
+                        if pct > 1:
+                            pct = 1
+                        progress_listener.on_progress_update(int(pct*100))
+                sys.stderr.flush()
+
+            progress_listener.on_progress_update(100)
+            progress_listener.on_eject()
+            progress_listener.on_completed()
 
 else:
     raise ImportError("OS not supported")
