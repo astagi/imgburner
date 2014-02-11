@@ -16,10 +16,11 @@ class MyProgressListener(ProgressListener):
 progress_listener = MyProgressListener()
 burner = Burner()
 devices = burner.list_devices()
+print devices
 for device in devices:
     print device['DeviceIdentifier']
 
 img_path = "2013-09-25-wheezy-raspbian.img"
 selected_device = devices[1]
 
-#burner.burn(selected_device, img_path, progress_listener)
+burner.burn(selected_device, img_path, progress_listener)
