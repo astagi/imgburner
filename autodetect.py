@@ -4,8 +4,8 @@ import threading, time
 class AutoDetectThread(threading.Thread):
     def run(self):
         burner = Burner()
+        current_devices = burner.list_devices()
         while True:
-            current_devices = burner.list_devices()
             time.sleep(1)
             rescanned_devices = burner.list_devices()
             removed_devices = [x for x in current_devices if x not in rescanned_devices]
@@ -16,6 +16,7 @@ class AutoDetectThread(threading.Thread):
             if len(added_devices) > 0:
                 for added_device in added_devices:
                     print "ADDED " + added_device['DeviceIdentifier']
+            current_devices = rescanned_devices
 
 auto_detect_thread = AutoDetectThread()
 auto_detect_thread.start()
