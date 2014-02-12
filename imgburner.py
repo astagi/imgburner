@@ -30,16 +30,16 @@ class Utilities():
         if m:
             value = int( m.group(1) )
             unit = m.group(2).lower()
-            mul = 1
+            mul = 0
             if unit == 'kb':
-                mul = 1000
+                mul = 1
             elif unit == 'mb':
-                mul = 1000 * 1000
+                mul = 2
             elif unit == 'gb':
-                mul = 1000 * 1000 * 1000
+                mul = 3
             elif unit == 'tb':
-                mul = 1000 * 1000 * 1000 * 1000
-        return value * mul
+                mul = 4
+        return value * (1000**mul)
 
 current_os = platform.system()
 
@@ -102,7 +102,6 @@ if current_os == 'Darwin':
                     time.sleep(0.1)
             if hadError:
                 progress_listener.on_error("Error during burning!")
-                sys.exit(1)
             else:
                 progress_listener.on_progress_update(100)
                 command = "diskutil eject /dev/" + device_identifier
@@ -176,7 +175,6 @@ elif current_os == 'Linux':
             print dd.stderr.read(),
             if hadError:
                 progress_listener.on_error("Error during burning!")
-                sys.exit(1)
             else:
                 progress_listener.on_progress_update(100)
                 """command = "diskutil eject /dev/" + device_identifier
